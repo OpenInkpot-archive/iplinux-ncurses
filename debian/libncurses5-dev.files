@@ -1,0 +1,6 @@
+usr/include/*.h
+/usr/lib/libncurses.a
+/usr/lib/libncurses++.a
+/usr/lib/libform.a
+/usr/lib/libmenu.a
+/usr/lib/libpanel.a

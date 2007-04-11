@@ -1,0 +1,64 @@
+Source: ncurses
+Section: libs
+Priority: standard
+Build-Depends: debhelper (>= 3.0.23), cross-toolchain
+Maintainer: Valentin Sitdikov <valentin.sitdikov@siemens.com>
+Standards-Version: 3.6.1
+
+Package: libncurses5
+Architecture: any
+Section: base
+Priority: optional
+Depends: ${shlibs:Depends}
+Description: Shared libraries for terminal handling
+ This package contains the shared libraries necessary to run programs
+ compiled with ncurses.
+
+Package: libncurses5-dev
+Architecture: any
+Section: libdevel
+Priority: optional
+Depends: libncurses5 (= ${Source-Version}), libc-dev | libuclibc-dev
+Description: Developer's libraries and docs for ncurses
+ This package contains the header files, static libraries
+ and symbolic links that developers using ncurses will need.
+ It also includes the libraries' man pages and other documentation.
+
+Package: lib64ncurses5
+Architecture: sparc s390
+Section: libs
+Priority: optional
+Depends: ${shlibs:Depends}
+Description: Shared libraries for terminal handling (64-bit)
+ This package contains the shared libraries necessary to run programs
+ compiled with ncurses.
+ .
+ This package supports the 64-bit ABI variant of your system's
+ architecure.
+
+Package: ncurses-bin
+Architecture: any
+Section: base
+Priority: optional
+Pre-Depends: ${shlibs:Depends}
+Provides: slind-virtual-ncurses-bin
+Conflicts: busybox, busybox-static
+Replaces: busybox, busybox-static
+Description: Terminal-related programs and man pages
+ This package contains the programs used for manipulating the terminfo
+ database and individual terminfo entries, as well as some programs for
+ resetting terminals and such.
+
+Package: ncurses-base
+Architecture: all
+Section: base
+Priority: required
+Essential: yes
+Conflicts: ncurses, ncurses-runtime
+Provides: ncurses-runtime
+Replaces: ncurses-term
+Description: Descriptions of common terminal types
+ This package contains what should be a reasonable subset of terminal
+ definitions, including: ansi, dumb, linux, rxvt, screen, sun, vt100,
+ vt102, vt220, vt52, and xterm.
+
