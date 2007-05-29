@@ -1,6 +1,7 @@
 Source: ncurses
 Section: libs
 Priority: standard
+XCS-Cross-Host-Build-Depends: debhelper (>= 3.0.23), cross-toolchain
 Build-Depends: debhelper (>= 3.0.23), cross-toolchain
 Maintainer: Valentin Sitdikov <valentin.sitdikov@siemens.com>
 Standards-Version: 3.6.1

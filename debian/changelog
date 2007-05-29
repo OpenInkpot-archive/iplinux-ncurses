@@ -1,3 +1,9 @@
+ncurses (5.4-4.slind2) testing; urgency=low
+
+  * New build dependencies
+
+ -- Sergey Lapin <slapin@slind.org>  Tue, 29 May 2007 18:52:21 +0400
+
 ncurses (5.4-4.slind1) testing; urgency=low
 
   * Testing prerelease. 
