@@ -19,7 +19,7 @@ Package: libncurses5-dev
 Architecture: any
 Section: libdevel
 Priority: optional
-Depends: libncurses5 (= ${Source-Version}), libc-dev | libuclibc-dev
+Depends: libncurses5 (= ${Source-Version}), cross-toolchain
 Description: Developer's libraries and docs for ncurses
  This package contains the header files, static libraries
  and symbolic links that developers using ncurses will need.
