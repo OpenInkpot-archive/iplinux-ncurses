@@ -1,5 +1,5 @@
 Source: ncurses
-Section: libs
+Section: core
 Priority: standard
 XCS-Cross-Host-Build-Depends: debhelper (>= 3.0.23), cross-toolchain
 Build-Depends: debhelper (>= 3.0.23), cross-toolchain
@@ -8,7 +8,7 @@ Standards-Version: 3.6.1
 
 Package: libncurses5
 Architecture: any
-Section: base
+Section: core
 Priority: optional
 Depends: ${shlibs:Depends}
 Description: Shared libraries for terminal handling
@@ -17,7 +17,7 @@ Description: Shared libraries for terminal handling
 
 Package: libncurses5-dev
 Architecture: any
-Section: libdevel
+Section: host-tools
 Priority: optional
 Depends: libncurses5 (= ${Source-Version}), cross-toolchain
 Description: Developer's libraries and docs for ncurses
@@ -25,21 +25,9 @@ Description: Developer's libraries and docs for ncurses
  and symbolic links that developers using ncurses will need.
  It also includes the libraries' man pages and other documentation.
 
-Package: lib64ncurses5
-Architecture: sparc s390
-Section: libs
-Priority: optional
-Depends: ${shlibs:Depends}
-Description: Shared libraries for terminal handling (64-bit)
- This package contains the shared libraries necessary to run programs
- compiled with ncurses.
- .
- This package supports the 64-bit ABI variant of your system's
- architecure.
-
 Package: ncurses-bin
 Architecture: any
-Section: base
+Section: core
 Priority: optional
 Pre-Depends: ${shlibs:Depends}
 Provides: slind-virtual-ncurses-bin
@@ -52,7 +40,7 @@ Description: Terminal-related programs and man pages
 
 Package: ncurses-base
 Architecture: all
-Section: base
+Section: core
 Priority: required
 Essential: yes
 Conflicts: ncurses, ncurses-runtime
