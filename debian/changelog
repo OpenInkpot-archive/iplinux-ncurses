@@ -1,3 +1,9 @@
+ncurses (5.4-4.slind4) testing; urgency=low
+
+  * Move -dev package to 'libdevel' section.
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Tue, 18 Dec 2007 12:58:37 +0300
+
 ncurses (5.4-4.slind3) testing; urgency=low
 
   * Fixed build depends

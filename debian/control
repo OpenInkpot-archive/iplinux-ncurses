@@ -18,7 +18,7 @@ Description: Shared libraries for terminal handling
 
 Package: libncurses5-dev
 Architecture: any
-Section: host-tools
+Section: libdevel
 Priority: optional
 Depends: libncurses5 (= ${Source-Version}), cross-toolchain
 Description: Developer's libraries and docs for ncurses
