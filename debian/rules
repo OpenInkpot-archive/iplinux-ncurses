@@ -43,6 +43,9 @@ ifneq ($(findstring linux,$(DEB_HOST_GNU_SYSTEM)),)
 with_gpm = --with-gpm
 endif
 
+# misc/Makefile does not expect several directories in PKG_CONFIG_LIBDIR
+PKG_CONFIG_LIBDIR=$(shell echo $PKG_CONFIG_LIBDIR | cut -d: -f1)
+
 CFLAGS = -O2 -g
 CONFARGS =	--prefix=/usr \
 		--with-shared \
