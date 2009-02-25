@@ -32,6 +32,7 @@ objdir=$(srcdir)/obj
 wobjdir=$(srcdir)/obj-wide
 objdir-debug=$(srcdir)/obj-debug
 wobjdir-debug=$(srcdir)/obj-wide-debug
+host-objdir=$(srcdir)/host-obj
 
 DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -61,7 +62,7 @@ CONFARGS =	--prefix=/usr \
 		--with-ticlib
 
 ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
-CONFARGS += --with-build-cc=gcc --host=$(DEB_HOST_GNU_TYPE)
+CROSS_CONFARGS = --with-build-cc=gcc --host=$(DEB_HOST_GNU_TYPE)
 endif
 
 # Files for /lib/terminfo.  Until the compatibility symlinks are removed
@@ -89,6 +90,7 @@ $(objdir)/config.status: patch
 	test -d $(objdir) || mkdir $(objdir)
 	cd $(objdir) && CFLAGS="$(CFLAGS)" $(srcdir)/configure \
 		$(CONFARGS) \
+		$(CROSS_CONFARGS) \
 		--with-install-prefix=$(fulltempdir) \
 		--enable-overwrite
 
@@ -97,6 +99,7 @@ $(objdir-debug)/config.status: patch
 	cd $(objdir-debug) && \
 		CFLAGS="$(CFLAGS) -DTRACE" $(srcdir)/configure \
 		$(CONFARGS) \
+		$(CROSS_CONFARGS) \
 		--with-install-prefix=$(fulltempdir) \
 		--enable-overwrite
 
@@ -104,6 +107,7 @@ $(wobjdir)/config.status: patch
 	test -d $(wobjdir) || mkdir $(wobjdir)
 	cd $(wobjdir) && CFLAGS="$(CFLAGS)" $(srcdir)/configure \
 		$(CONFARGS) \
+		$(CROSS_CONFARGS) \
 		--with-install-prefix=$(fulltempdir) \
 		--disable-overwrite --enable-widec
 
@@ -112,22 +116,18 @@ $(wobjdir-debug)/config.status: patch
 	cd $(wobjdir-debug) && \
 		CFLAGS="$(CFLAGS) -DTRACE" $(srcdir)/configure \
 		$(CONFARGS) \
+		$(CROSS_CONFARGS) \
 		--with-install-prefix=$(fulltempdir) \
 		--disable-overwrite --enable-widec
 
-$(wobjdir-32)/config.status: patch
-	test -d $(wobjdir-32) || mkdir $(wobjdir-32)
-
-	cd $(wobjdir-32) && CFLAGS="$(CFLAGS)" CC="gcc -m32" \
-		BUILD_CC="gcc" BUILD_CPPFLAGS="-D_GNU_SOURCE" CXX="g++ -m32" \
-		$(srcdir)/configure \
+$(host-objdir)/config.status: patch
+	test -d $(host-objdir) || mkdir $(host-objdir)
+	cd $(host-objdir) && CFLAGS="$(CFLAGS)" $(srcdir)/configure \
 		$(CONFARGS) \
-		--build=$(DEB_BUILD_GNU_TYPE) \
-		--host=$(build_32_target) \
-		--without-gpm \
 		--with-install-prefix=$(fulltempdir) \
 		--enable-overwrite
 
+build: build-normal build-wide build-debug build-wide-debug build-host
 	touch $@
 
 build-normal: $(objdir)/config.status
@@ -146,6 +146,10 @@ build-wide-debug: $(wobjdir-debug)/config.status
 	cd $(wobjdir-debug) && $(MAKE)
 	touch $@
 
+build-host: $(host-objdir)/config.status
+	cd $(host-objdir) && $(MAKE)
+	touch $@
+
 clean: unpatch
 	dh_testdir
 	dh_testroot
@@ -154,8 +158,8 @@ clean: unpatch
 	rm -rf $(wobjdir)
 	rm -rf $(objdir-debug)
 	rm -rf $(wobjdir-debug)
-	rm -f build-normal build-wide build-debug build-wide-debug \
-		$(build_32) $(build_64)
+	rm -rf $(host-objdir)
+	rm -f build-normal build-wide build-debug build-wide-debug build-host
 	rm -f debian/shlibs.local
 	dh_clean
 
@@ -202,19 +206,11 @@ ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
 		$(tempdir)/usr/bin/tic -x debian/$$ti.ti; \
 	done
 else
-	@build_ver=`sed -n -e					\
-	  's/^.*NCURSES_VERSION_STRING \"\(.*\)\"$$/\1/p'	\
-	  obj/include/ncurses_cfg.h`;				\
-	if [ "$$build_ver" != `tic -V | sed 's/^.* //'` ]; then	\
-	  echo "Build environment version mismatch for tic!";	\
-	  exit 1;						\
-	fi
-
 	for ti in xterm hurd rxvt rxvt-unicode screen; do \
+		LD_LIBRARY_PATH=$(host-objdir)/lib \
 		TERMINFO=$(fulltempdir)/usr/share/terminfo \
-		tic -x debian/$$ti.ti; \
+		$(host-objdir)/progs/tic -x debian/$$ti.ti; \
 	done
-
 endif
 
 	# We keep the libncurses shared library in /lib.
