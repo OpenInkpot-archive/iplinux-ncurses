@@ -16,15 +16,9 @@ sodepver = (>= 5.6+20071006-3)
 package-base=ncurses-base
 package-bin=ncurses-bin
 package-lib=libncurses$(soname)
-package-lib-32=lib32ncurses$(soname)
-package-lib-64=lib64ncurses$(soname)
 package-libw=libncursesw$(soname)
-package-libw-32=lib32ncursesw$(soname)
 package-dev=libncurses$(soname)-dev
-package-dev-32=lib32ncurses$(soname)-dev
-package-dev-64=lib64ncurses$(soname)-dev
 package-devw=libncursesw$(soname)-dev
-package-devw-32=lib32ncursesw$(soname)-dev
 package-dbg=libncurses$(soname)-dbg
 package-dbgw=libncursesw$(soname)-dbg
 package-term=ncurses-term
@@ -35,10 +29,7 @@ fulltempdir=$(workdir)/$(tempdir)
 
 srcdir=$(shell pwd)
 objdir=$(srcdir)/obj
-objdir-32=$(srcdir)/obj-32
-objdir-64=$(srcdir)/obj-64
 wobjdir=$(srcdir)/obj-wide
-wobjdir-32=$(srcdir)/obj-wide-32
 objdir-debug=$(srcdir)/obj-debug
 wobjdir-debug=$(srcdir)/obj-wide-debug
 
@@ -46,40 +37,6 @@ DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_HOST_GNU_SYSTEM ?= $(shell dpkg-architecture -qDEB_HOST_GNU_SYSTEM)
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-
-ifeq ($(DEB_HOST_ARCH),i386)
-build_64_target = x86_64-$(DEB_HOST_GNU_SYSTEM)
-build_64 = build-64
-endif
-
-ifeq ($(DEB_HOST_ARCH),powerpc)
-build_64_target = powerpc64-$(DEB_HOST_GNU_SYSTEM)
-build_64 = build-64
-endif
-
-ifeq ($(DEB_HOST_ARCH),s390)
-build_64_target = s390x-$(DEB_HOST_GNU_SYSTEM)
-build_64 = build-64
-endif
-
-ifeq ($(DEB_HOST_ARCH),sparc)
-build_64_target = sparc64-$(DEB_HOST_GNU_SYSTEM)
-build_64 = build-64
-endif
-
-ifeq ($(DEB_HOST_ARCH),amd64)
-build_32_target = i486-$(DEB_HOST_GNU_SYSTEM)
-build_32 = build-32 build-wide-32
-lib32 = /emul/ia32-linux/lib
-usr_lib32 = /emul/ia32-linux/usr/lib
-endif
-
-ifeq ($(DEB_HOST_ARCH),ppc64)
-build_32_target = powerpc-$(DEB_HOST_GNU_SYSTEM)
-build_32 = build-32 build-wide-32
-lib32 = /lib32
-usr_lib32 = /usr/lib32
-endif
 
 ifneq ($(findstring linux,$(DEB_HOST_GNU_SYSTEM)),)
 with_gpm = --with-gpm
@@ -135,36 +92,6 @@ $(objdir)/config.status: patch
 		--with-install-prefix=$(fulltempdir) \
 		--enable-overwrite
 
-$(objdir-32)/config.status: patch
-	test -d $(objdir-32) || mkdir $(objdir-32)
-
-	cd $(objdir-32) && CFLAGS="$(CFLAGS)" CC="gcc -m32" \
-		BUILD_CC="gcc" CXX="g++ -m32" \
-		$(srcdir)/configure \
-		$(CONFARGS) \
-		--build=$(DEB_BUILD_GNU_TYPE) \
-		--host=$(build_32_target) \
-		--without-gpm \
-		--with-install-prefix=$(fulltempdir) \
-		--enable-overwrite --libdir=$(usr_lib32)
-
-$(objdir-64)/config.status: patch
-	test -d $(objdir-64) || mkdir $(objdir-64)
-
-	# Force necessary configure checks which do not work when
-	# cross compiling; all Debian platforms return unsigned char
-	# for this configure check.
-	cf_cv_type_of_bool='unsigned char'; export cf_cv_type_of_bool; \
-	cd $(objdir-64) && CFLAGS="$(CFLAGS)" CC="gcc -m64" \
-		BUILD_CC="gcc" CXX="g++ -m64" \
-		$(srcdir)/configure \
-		$(CONFARGS) \
-		--build=$(DEB_BUILD_GNU_TYPE) \
-		--host=$(build_64_target) \
-		--without-gpm \
-		--with-install-prefix=$(fulltempdir) \
-		--enable-overwrite --libdir=/usr/lib64
-
 $(objdir-debug)/config.status: patch
 	test -d $(objdir-debug) || mkdir $(objdir-debug)
 	cd $(objdir-debug) && \
@@ -199,25 +126,12 @@ $(wobjdir-32)/config.status: patch
 		--host=$(build_32_target) \
 		--without-gpm \
 		--with-install-prefix=$(fulltempdir) \
-		--disable-overwrite --enable-widec \
-		--libdir=$(usr_lib32)
-
-
-build: build-normal build-wide build-debug build-wide-debug \
-	$(build_64) $(build_32)
+		--enable-overwrite
 
 	touch $@
 
 build-normal: $(objdir)/config.status
 	cd $(objdir) && $(MAKE)
-	touch $@
-
-build-32: $(objdir-32)/config.status
-	cd $(objdir-32) && $(MAKE)
-	touch $@
-
-build-64: $(objdir-64)/config.status
-	cd $(objdir-64) && $(MAKE)
 	touch $@
 
 build-debug: $(objdir-debug)/config.status
@@ -226,10 +140,6 @@ build-debug: $(objdir-debug)/config.status
 
 build-wide: $(wobjdir)/config.status
 	cd $(wobjdir) && $(MAKE)
-	touch $@
-
-build-wide-32: $(wobjdir-32)/config.status
-	cd $(wobjdir-32) && $(MAKE)
 	touch $@
 
 build-wide-debug: $(wobjdir-debug)/config.status
@@ -241,10 +151,7 @@ clean: unpatch
 	dh_testroot
 	rm -f build
 	rm -rf $(objdir)
-	rm -rf $(objdir-32)
-	rm -rf $(objdir-64)
 	rm -rf $(wobjdir)
-	rm -rf $(wobjdir-32)
 	rm -rf $(objdir-debug)
 	rm -rf $(wobjdir-debug)
 	rm -f build-normal build-wide build-debug build-wide-debug \
@@ -260,27 +167,6 @@ install: build
 	dh_prep
 	dh_installdirs -s
 	dh_installdirs -i
-
-ifneq ($(build_32),)
-	$(MAKE) -C $(objdir-32) install.libs
-	$(MAKE) -C $(wobjdir-32) install.libs
-	test -d $(tempdir)$(lib32) || mkdir $(tempdir)$(lib32)
-	mv $(tempdir)$(usr_lib32)/libncurses.so.$(vername) $(tempdir)$(lib32)/
-	mv $(tempdir)$(usr_lib32)/libncurses.so.$(soname) $(tempdir)$(lib32)/
-	mv $(tempdir)$(usr_lib32)/libncursesw.so.$(vername) $(tempdir)$(lib32)/
-	mv $(tempdir)$(usr_lib32)/libncursesw.so.$(soname) $(tempdir)$(lib32)/
-	mv $(tempdir)$(usr_lib32)/libtic.so.$(vername) $(tempdir)$(lib32)/
-	mv $(tempdir)$(usr_lib32)/libtic.so.$(soname) $(tempdir)$(lib32)/
-endif
-
-ifneq ($(build_64),)
-	$(MAKE) -C $(objdir-64) install.libs
-	test -d $(tempdir)/lib64 || mkdir $(tempdir)/lib64
-	mv $(tempdir)/usr/lib64/libncurses.so.$(vername) $(tempdir)/lib64/
-	mv $(tempdir)/usr/lib64/libncurses.so.$(soname) $(tempdir)/lib64/
-	mv $(tempdir)/usr/lib64/libtic.so.$(vername) $(tempdir)/lib64/
-	mv $(tempdir)/usr/lib64/libtic.so.$(soname) $(tempdir)/lib64/
-endif
 
 	mkdir -p $(tempdir)/etc
 
@@ -368,17 +254,6 @@ endif
 	ln -sf /lib/libncursesw.so.$(soname) debian/$(package-devw)/usr/lib/libncursesw.so
 	ln -sf /lib/libtic.so.$(soname) debian/$(package-dev)/usr/lib/libtic.so
 	ln -sf /lib/libticw.so.$(soname) debian/$(package-devw)/usr/lib/libticw.so
-ifneq ($(build_32),)
-	# Since the 32-bit libraries live in /emul, we can use a relative
-	# symlink.
-	ln -sf /lib32/libncurses.so.$(soname) debian/$(package-dev-32)$(usr_lib32)/libncurses.so
-	ln -sf /lib32/libncursesw.so.$(soname) debian/$(package-devw-32)$(usr_lib32)/libncursesw.so
-	ln -sf /lib32/libtic.so.$(soname) debian/$(package-dev-32)$(usr_lib32)/libtic.so
-endif
-ifneq ($(build_64),)
-	ln -sf /lib64/libncurses.so.$(soname) debian/$(package-dev-64)/usr/lib64/libncurses.so
-	ln -sf /lib64/libtic.so.$(soname) debian/$(package-dev-64)/usr/lib64/tic.so
-endif
 
 	# By tradition, we provide -lcurses and -ltermcap.
 	ln -sf libncurses.so debian/$(package-dev)/usr/lib/libcurses.so
@@ -400,38 +275,9 @@ binary-arch: build install
 	dh_fixperms -s
 	dh_makeshlibs -p$(package-lib) -V "$(package-lib) $(sodepver)"
 	dh_makeshlibs -p$(package-libw) -V "$(package-libw) $(sodepver)"
-ifneq ($(build_32),)
-	dh_makeshlibs -p$(package-lib-32) -V "$(package-lib-32) $(sodepver)"
-	dh_makeshlibs -p$(package-libw-32) -V "$(package-libw-32) $(sodepver)"
-endif
-ifneq ($(build_64),)
-	dh_makeshlibs -p$(package-lib-64) -V "$(package-lib-64) $(sodepver)"
-endif
 	dh_shlibdeps -p$(package-lib) -p$(package-libw) \
 		-ldebian/$(package-lib)/lib:debian/$(package-lib)/usr/lib:debian/$(package-libw)/usr/lib \
 		-- -L$(shell pwd)/debian/shlibs.dummy
-
-ifneq ($(build_32),)
-	# It should not be necessary to use $(lib32):$(usr_lib32): here.
-	# But dpkg-shlibdeps has a hardcoded list of paths, which does not
-	# include the /emul directories, and there are no symlinks in
-	# /lib/ldconfig yet for these directories either.
-	dh_shlibdeps -p$(package-lib-32) \
-		-l$(lib32):$(usr_lib32):debian/$(package-lib-32)$(lib32):debian/$(package-lib-32)$(usr_lib32) \
-		-- -L$(shell pwd)/debian/shlibs.dummy
-	dh_shlibdeps -p$(package-libw-32) \
-		-l$(lib32):$(usr_lib32):debian/$(package-libw-32)$(lib32):debian/$(package-libw-32)$(usr_lib32) \
-		-- -L$(shell pwd)/debian/shlibs.dummy
-endif
-
-ifneq ($(build_64),)
-	# Unfortunately, dh_shlibdeps runs ldd, and 64-bit ldd doesn't run on
-	# a 31-bit S/390 build daemon, so I can't always use dh_shlibdeps.
-	# So this is allowed to fail.
-	-dh_shlibdeps -p$(package-lib-64) \
-		-ldebian/$(package-lib-64)/lib64:debian/$(package-lib-64)/usr/lib64 \
-		-- -L$(shell pwd)/debian/shlibs.dummy
-endif
 
 	# We don't ship any binaries linked against the 64-bit libraries, so
 	# don't add them to shlibs.  They have the same sonames, so they
@@ -441,7 +287,6 @@ endif
 	  debian/$(package-libw)/DEBIAN/shlibs > debian/shlibs.local
 
 	dh_shlibdeps -s -N$(package-lib) -N$(package-libw) \
-		-N$(package-lib-32) -N$(package-libw-32) -N$(package-lib-64) \
 		-ldebian/$(package-lib)/lib:debian/$(package-lib)/usr/lib:debian/$(package-libw)/usr/lib
 
 	dh_gencontrol -s
