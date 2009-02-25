@@ -224,17 +224,11 @@ endif
 	mv $(tempdir)/usr/lib/libticw.so.$(vername) $(tempdir)/lib/
 	mv $(tempdir)/usr/lib/libticw.so.$(soname) $(tempdir)/lib/
 
-	# Move ncurses-base terminfo entries to /lib/terminfo.  Also create
-	# compatibility symlinks from /usr/share/terminfo to /lib/terminfo.
-	# The library doesn't need these, and third party applications
-	# shouldn't either, but running applications may not reload
-	# libncurses; in particular, the upgrade can hork running "screen"
-	# sessions.  The symlinks will be removed a few months after 5.4-9.
+	# Move ncurses-base terminfo entries to /lib/terminfo.
 	for f in $(libterminfofiles); do \
 		dir=$(tempdir)/lib/terminfo/$$(dirname $$f); \
 		mkdir -p $$dir; \
 		mv $(tempdir)/usr/share/terminfo/$$f $$dir; \
-		ln -s /lib/terminfo/$$f $(tempdir)/usr/share/terminfo/$$f; \
 	done
 
 	# Create an empty /etc/terminfo for the sysadmin.
