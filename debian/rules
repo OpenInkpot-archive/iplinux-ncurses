@@ -233,8 +233,6 @@ endif
 
 	# Create an empty /etc/terminfo for the sysadmin.
 	mkdir -p $(tempdir)/etc/terminfo
-	install --mode 644 --owner=root --group=root \
-		debian/README.etc $(tempdir)/etc/terminfo/README
 
 	dh_movefiles -s
 	dh_movefiles -i
@@ -256,9 +254,6 @@ binary:	binary-arch binary-indep
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installdocs -s debian/FAQ
-	dh_installchangelogs -s NEWS
-	dh_installexamples -s
 
 	dh_strip -s -X$(package-dbg) -X$(package-dbgw)
 	dh_compress -s
@@ -289,8 +284,6 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 
-	dh_installdocs
-	dh_installchangelogs NEWS
 	dh_compress -i
 	dh_fixperms -i
 	dh_gencontrol -i
