@@ -276,7 +276,6 @@ binary-arch: build install
 
 	dh_gencontrol -s
 	dh_installdeb -s
-	dh_md5sums -s
 	dh_builddeb -s
 
 binary-indep: DH_OPTIONS=-i
@@ -288,7 +287,6 @@ binary-indep: build install
 	dh_fixperms -i
 	dh_gencontrol -i
 	dh_installdeb -i
-	dh_md5sums -i
 	dh_builddeb -i
 
 .PHONY: binary diff clean patch install

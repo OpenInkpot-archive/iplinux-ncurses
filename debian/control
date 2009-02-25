@@ -1,16 +1,13 @@
 Source: ncurses
-Section: libs
+Section: core
 Priority: standard
-Maintainer: Daniel Baumann <daniel@debian.org>
-Build-Depends: debhelper (>= 7), dpatch, g++-multilib [amd64 i386 kfreebsd-amd64 powerpc ppc64 s390 sparc], libgpm-dev [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386]
+Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
+Build-Depends: debhelper (>= 7), dpatch, libgpm-dev [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386]
 Standards-Version: 3.8.0
 Homepage: ftp://invisible-island.net/ncurses/
-Vcs-Browser: http://git.debian.net/?p=debian/ncurses.git
-Vcs-Git: git://git.debian.net/git/debian/ncurses.git
 
 Package: libncurses5
 Architecture: any
-Section: libs
 Priority: required
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: libgpm2
@@ -33,7 +30,7 @@ Description: developer's libraries and docs for ncurses
 
 Package: libncurses5-dbg
 Architecture: any
-Section: libdevel
+Section: debug
 Priority: extra
 Depends: libncurses5-dev (= ${binary:Version})
 Description: debugging/profiling libraries for ncurses
@@ -41,7 +38,6 @@ Description: debugging/profiling libraries for ncurses
 
 Package: libncursesw5
 Architecture: any
-Section: libs
 Priority: important
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: libgpm2
@@ -63,7 +59,7 @@ Description: developer's libraries for ncursesw
 
 Package: libncursesw5-dbg
 Architecture: any
-Section: libdevel
+Section: debug
 Priority: extra
 Depends: libncursesw5-dev (= ${binary:Version})
 Description: debugging/profiling libraries for ncurses
@@ -73,9 +69,6 @@ Description: debugging/profiling libraries for ncurses
 
 Package: ncurses-bin
 Architecture: any
-Section: utils
-Priority: required
-Essential: yes
 Pre-Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: ncurses, tput
 Provides: tput
@@ -86,11 +79,6 @@ Description: terminal-related programs and man pages
 
 Package: ncurses-base
 Architecture: all
-Section: utils
-Priority: required
-Essential: yes
-Conflicts: ncurses, ncurses-runtime
-Provides: ncurses-runtime
 Replaces: ncurses-term
 Depends: libncurses5
 Description: basic terminal type definitions
@@ -100,7 +88,6 @@ Description: basic terminal type definitions
 
 Package: ncurses-term
 Architecture: all
-Section: admin
 Priority: standard
 Description: additional terminal type definitions
  This package contains all of the numerous terminal definitions not found in
