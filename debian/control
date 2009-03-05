@@ -3,6 +3,7 @@ Section: core
 Priority: standard
 Maintainer: Mikhail Gusarov <dottedmag@dottedmag.net>
 Build-Depends: debhelper (>= 7), dpatch, libgpm-dev [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386]
+XCS-Cross-Host-Build-Depends: debhelper (>= 7), dpatch
 Standards-Version: 3.8.0
 Homepage: ftp://invisible-island.net/ncurses/
 

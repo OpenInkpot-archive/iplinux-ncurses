@@ -39,10 +39,6 @@ DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_HOST_GNU_SYSTEM ?= $(shell dpkg-architecture -qDEB_HOST_GNU_SYSTEM)
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
-ifneq ($(findstring linux,$(DEB_HOST_GNU_SYSTEM)),)
-with_gpm = --with-gpm
-endif
-
 # misc/Makefile does not expect several directories in PKG_CONFIG_LIBDIR
 PKG_CONFIG_LIBDIR=$(shell echo $PKG_CONFIG_LIBDIR | cut -d: -f1)
 
@@ -54,7 +50,6 @@ CONFARGS =	--prefix=/usr \
 		--disable-rpath --enable-echo \
 		--enable-const \
 		--without-ada \
-		$(with_gpm) \
 		--enable-symlinks \
 		--disable-lp64 \
 		--with-chtype='long' \
@@ -84,10 +79,6 @@ libterminfofiles=a/ansi c/cons25 c/cygwin d/dumb h/hurd l/linux m/mach \
 # not begin shipping them by accident.
 badterminfo = 5/5250 b/bterm i/iterm i/iterm-am i/iterm-color \
 	j/jfbterm k/kon l/linux-5250 m/mlterm
-
-# The ncurses configure test won't work when cross compiling (e.g. for
-# 64 bit libraries), so force the libgpm soname to the correct value.
-export cf_cv_gpm_soname=libgpm.so.2
 
 $(objdir)/config.status: patch
 	test -d $(objdir) || mkdir $(objdir)
