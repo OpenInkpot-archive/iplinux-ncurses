@@ -1,3 +1,9 @@
+ncurses (5.7+20090214-1.ip2) asimov; urgency=low
+
+  * Updated build-dependencies and disabled gpm.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 05 Mar 2009 19:17:49 +0600
+
 ncurses (5.7+20090214-1.ip1) asimov; urgency=low
 
   * First build for IPlinux.
