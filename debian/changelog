@@ -1,3 +1,9 @@
+ncurses (5.7+20090214-1.ip3) asimov; urgency=low
+
+  * Rebuild to fix libgcc1 dependency.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 26 May 2009 23:22:21 +0700
+
 ncurses (5.7+20090214-1.ip2+b1) unstable; urgency=low
 
   * Rebuild with new toolchain.
